@@ -94,11 +94,23 @@ export function ApplyForm() {
       
       form.reset();
       setCurrentSection(1);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting application:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = "There was an error submitting your application. Please try again.";
+      
+      if (error?.message?.includes("Failed to fetch") || error?.message?.includes("ERR_NAME_NOT_RESOLVED")) {
+        errorMessage = "Cannot connect to the server. Please check your internet connection and try again.";
+      } else if (error?.code) {
+        errorMessage = `Database error: ${error.message || error.code}`;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: "There was an error submitting your application. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
